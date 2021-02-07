@@ -9,6 +9,8 @@ target 'instamobile_audio_player' do
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'
 
+  pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
+
   target 'instamobile_audio_playerTests' do
     inherit! :complete
     # Pods for testing

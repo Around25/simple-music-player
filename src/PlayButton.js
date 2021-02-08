@@ -6,7 +6,7 @@ export default (props) => {
   return (
     <TouchableOpacity
       style={styles.playButtonContainer}
-      onPress={props.function}>
+      onPress={props.onPress}>
       <FontAwesome name={props.state} size={32} color="#3D425C" />
     </TouchableOpacity>
   );

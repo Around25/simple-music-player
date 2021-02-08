@@ -63,7 +63,7 @@ export default () => {
     setTimeElapsed(seektime), audioRecorderPlayer.seekToPlayer(seektime);
   };
 
-  onStartPlay = async (e) => {
+  onStartPress = async (e) => {
     setisAlreadyPlay(true);
     setInprogress(true);
     const path = 'file://' + dirs + '/' + playlist[current_track].path;
@@ -82,7 +82,7 @@ export default () => {
       setDuration(e.duration);
     });
   };
-  onPausePlay = async (e) => {
+  onPausePress = async (e) => {
     setisAlreadyPlay(false);
     audioRecorderPlayer.pausePlayer();
   };
@@ -95,7 +95,7 @@ export default () => {
       setCurrentTrack((current_track) => current_track + 1);
     }
     onStopPlay().then(async () => {
-      await onStartPlay();
+      await onStartPress();
     });
   };
   onBackward = async () => {
@@ -109,7 +109,7 @@ export default () => {
       setCurrentTrack((current_track) => current_track - 1);
     }
     onStopPlay().then(async () => {
-      await onStartPlay();
+      await onStartPress();
     });
   };
   onStopPlay = async (e) => {
@@ -166,9 +166,9 @@ export default () => {
           <FontAwesome name="backward" size={32} color="#93A8B3" />
         </TouchableOpacity>
         {!isAlreadyPlay ? (
-          <PlayButton function={() => onStartPlay()} state="play" />
+          <PlayButton function={() => onStartPress()} state="play" />
         ) : (
-          <PlayButton function={() => onPausePlay()} state="pause" />
+          <PlayButton function={() => onPausePress()} state="pause" />
         )}
         <TouchableOpacity onPress={() => onForward()}>
           <FontAwesome name="forward" size={32} color="#93A8B3" />

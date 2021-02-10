@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,11 +12,43 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
 import PlayButton from './PlayButton';
-/* 
-    Ruta del directorio local donde se almacenan los audios
-*/
+
 let dirs = RNFetchBlob.fs.dirs.DocumentDir;
-export default () => {
+
+const playlist = [
+  {
+    title: 'Emergence of Talents',
+    path: 'track1.mp3',
+    cover:
+      'https://images.unsplash.com/photo-1515552726023-7125c8d07fb3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=667&q=80',
+  },
+  {
+    title: 'Shippuden',
+    path: 'track2.mp3',
+    cover:
+      'https://images.unsplash.com/photo-1542359649-31e03cd4d909?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=667&q=80',
+  },
+  {
+    title: 'Rising Dragon',
+    path: 'track3.mp3',
+    cover:
+      'https://images.unsplash.com/photo-1512036666432-2181c1f26420?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80',
+  },
+  {
+    title: 'Risking it all',
+    path: 'track4.mp3',
+    cover:
+      'https://images.unsplash.com/photo-1501761095094-94d36f57edbb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=401&q=80',
+  },
+  {
+    title: 'Gekiha',
+    path: 'track5.mp3',
+    cover:
+      'https://images.unsplash.com/photo-1471400974796-1c823d00a96f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80',
+  },
+];
+
+export default function App() {
   const [isAlreadyPlay, setisAlreadyPlay] = useState(false);
   const [duration, setDuration] = useState('00:00:00');
   const [timeElapsed, setTimeElapsed] = useState('00:00:00');
@@ -24,50 +56,19 @@ export default () => {
   const [current_track, setCurrentTrack] = useState(0);
   const [inprogress, setInprogress] = useState(false);
   const [audioRecorderPlayer] = useState(new AudioRecorderPlayer());
-  const playlist = [
-    {
-      title: 'Emergence of Talents',
-      path: 'track1.mp3',
-      cover:
-        'https://images.unsplash.com/photo-1515552726023-7125c8d07fb3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=667&q=80',
-    },
-    {
-      title: 'Shippuden',
-      path: 'track2.mp3',
-      cover:
-        'https://images.unsplash.com/photo-1542359649-31e03cd4d909?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=667&q=80',
-    },
-    {
-      title: 'Rising Dragon',
-      path: 'track3.mp3',
-      cover:
-        'https://images.unsplash.com/photo-1512036666432-2181c1f26420?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80',
-    },
-    {
-      title: 'Risking it all',
-      path: 'track4.mp3',
-      cover:
-        'https://images.unsplash.com/photo-1501761095094-94d36f57edbb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=401&q=80',
-    },
-    {
-      title: 'Gekiha',
-      path: 'track5.mp3',
-      cover:
-        'https://images.unsplash.com/photo-1471400974796-1c823d00a96f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80',
-    },
-  ];
 
-  changeTime = async (seconds) => {
+  const changeTime = async (seconds) => {
     // 50 / duration
     let seektime = (seconds / 100) * duration;
-    setTimeElapsed(seektime), audioRecorderPlayer.seekToPlayer(seektime);
+    setTimeElapsed(seektime);
+    audioRecorderPlayer.seekToPlayer(seektime);
   };
 
-  onStartPress = async (e) => {
+  const onStartPress = async (e) => {
     setisAlreadyPlay(true);
     setInprogress(true);
     const path = 'file://' + dirs + '/' + playlist[current_track].path;
-    const msg = audioRecorderPlayer.startPlayer(path);
+    audioRecorderPlayer.startPlayer(path);
     audioRecorderPlayer.setVolume(1.0);
 
     audioRecorderPlayer.addPlayBackListener(async (e) => {
@@ -82,46 +83,50 @@ export default () => {
       setDuration(e.duration);
     });
   };
-  onPausePress = async (e) => {
+
+  const onPausePress = async (e) => {
     setisAlreadyPlay(false);
     audioRecorderPlayer.pausePlayer();
   };
-  onForward = async () => {
-    let curr_track = playlist[current_track];
-    let current_index = playlist.indexOf(curr_track) + 1;
-    if (current_index == playlist.length) {
-      setCurrentTrack(1);
-    } else {
-      setCurrentTrack((current_track) => current_track + 1);
-    }
-    onStopPlay().then(async () => {
-      await onStartPress();
-    });
-  };
-  onBackward = async () => {
-    let curr_track = playlist[current_track];
 
-    let current_index = playlist.indexOf(curr_track);
-
-    if (current_index == 0) {
-      setCurrentTrack(5);
-    } else {
-      setCurrentTrack((current_track) => current_track - 1);
-    }
-    onStopPlay().then(async () => {
-      await onStartPress();
-    });
-  };
-  onStopPlay = async (e) => {
+  const onStopPress = async (e) => {
     await audioRecorderPlayer.stopPlayer();
     await audioRecorderPlayer.removePlayBackListener();
   };
 
+  const onForward = async () => {
+    let curr_track = playlist[current_track];
+    let current_index = playlist.indexOf(curr_track) + 1;
+    if (current_index === playlist.length) {
+      setCurrentTrack(1);
+    } else {
+      setCurrentTrack((current_track) => current_track + 1);
+    }
+    onStopPress().then(async () => {
+      await onStartPress();
+    });
+  };
+
+  const onBackward = async () => {
+    let curr_track = playlist[current_track];
+
+    let current_index = playlist.indexOf(curr_track);
+
+    if (current_index === 0) {
+      setCurrentTrack(5);
+    } else {
+      setCurrentTrack((current_track) => current_track - 1);
+    }
+    onStopPress().then(async () => {
+      await onStartPress();
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{alignItems: 'center'}}>
+      <View style={{ alignItems: 'center' }}>
         <View style={styles.titleContainer}>
-          <Text style={[styles.textLight, {fontSize: 12}]}>PLAYLIST</Text>
+          <Text style={[styles.textLight, { fontSize: 12 }]}>PLAYLIST</Text>
           <Text style={styles.text}>Instaplayer</Text>
         </View>
         <View style={styles.coverContainer}>
@@ -129,11 +134,12 @@ export default () => {
             source={{
               uri: playlist[current_track].cover,
             }}
-            style={styles.cover}></Image>
+            style={styles.cover}
+          />
         </View>
 
         <View style={styles.trackname}>
-          <Text style={[styles.textDark, {fontSize: 20, fontWeight: '500'}]}>
+          <Text style={[styles.textDark, { fontSize: 20, fontWeight: '500' }]}>
             {playlist[current_track].title}
           </Text>
         </View>
@@ -146,7 +152,8 @@ export default () => {
           thumbStyle={styles.thumb}
           value={percent}
           minimumTrackTintColor="#93A8B3"
-          onValueChange={(seconds) => changeTime(seconds)}></Slider>
+          onValueChange={(seconds) => changeTime(seconds)}
+        />
         <View style={styles.inprogress}>
           <Text style={[styles.textLight, styles.timeStamp]}>
             {!inprogress
@@ -176,7 +183,8 @@ export default () => {
       </View>
     </SafeAreaView>
   );
-};
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -188,7 +196,7 @@ const styles = StyleSheet.create({
   text: {
     color: '#8E97A6',
   },
-  titleContainer: {alignItems: 'center', marginTop: 24},
+  titleContainer: { alignItems: 'center', marginTop: 24 },
   textDark: {
     color: '#3D425C',
   },
@@ -203,7 +211,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     shadowColor: '#5D3F6A',
-    shadowOffset: {height: 15},
+    shadowOffset: { height: 15 },
     shadowRadius: 8,
     shadowOpacity: 0.3,
   },
@@ -226,11 +234,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '500',
   },
-  seekbar: {margin: 32},
+  seekbar: { margin: 32 },
   inprogress: {
     marginTop: -12,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  trackname: {alignItems: 'center', marginTop: 32},
+  trackname: { alignItems: 'center', marginTop: 32 },
 });
